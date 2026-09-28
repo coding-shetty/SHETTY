@@ -1,3 +1,4 @@
+mod settings;
 mod memory;
 mod agent;
 use serde::{Deserialize, Serialize};
@@ -31,7 +32,7 @@ fn remember_inner(text:String)->Result<String,String>{let path=memory_path();if 
 #[tauri::command] pub fn classify_command(command:String)->String{risk(&command).into()}
 #[tauri::command] pub fn run_safe_command(command:String, confirmed:bool)->Result<String,String>{let level=risk(&command);if level!="LOW"&&!confirmed{return Err(format!("Confirmation required for {} risk command.",level))}let out=Command::new("sh").args(["-lc",&command]).output().map_err(|e|e.to_string())?;Ok(serde_json::json!({"success":out.status.success(),"risk":level,"stdout":String::from_utf8_lossy(&out.stdout),"stderr":String::from_utf8_lossy(&out.stderr)}).to_string())}
 
-#[cfg_attr(mobile, tauri::mobile_entry_point)] pub fn run(){tauri::Builder::default().manage(AppState::default()).invoke_handler(tauri::generate_handler![diagnostics,agent_ask,open_app,remember,classify_command,run_safe_command,list_tools,memory::memory_store,memory::memory_search,memory::memory_get,memory::memory_delete,memory::memory_clear]).run(tauri::generate_context!()).expect("error while running JARVIS");}
+#[cfg_attr(mobile, tauri::mobile_entry_point)] pub fn run(){tauri::Builder::default().manage(AppState::default()).invoke_handler(tauri::generate_handler![diagnostics,agent_ask,open_app,remember,classify_command,run_safe_command,list_tools,memory::memory_store,memory::memory_search,memory::memory_get,memory::memory_delete,memory::memory_clear,settings::settings_get,settings::settings_update,settings::settings_reset]).run(tauri::generate_context!()).expect("error while running JARVIS");}
 
 #[cfg(test)] mod tests { use super::risk; #[test] fn risk_policy(){ assert_eq!(risk("pwd"),"LOW"); assert_eq!(risk("git status"),"MEDIUM"); assert_eq!(risk("rm ./cache"),"HIGH"); assert_eq!(risk("rm -rf ./cache"),"CRITICAL"); assert_eq!(risk("sudo shutdown -h now"),"CRITICAL"); } }
 

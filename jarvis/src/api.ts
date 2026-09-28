@@ -11,3 +11,8 @@ export async function health() { return call<Record<string, string>>('diagnostic
 export async function ask(text:string) { return call<{reply:string; activities:Activity[]}>('agent_ask', { text }); }
 export async function remember(text:string) { return call<string>('remember', { text }); }
 export async function openApp(name:string) { return call<string>('open_app', { name }); }
+
+export type Settings={ollama_url:string;text_model:string;vision_model:string;temperature:number;context_size:number;wake_word:string;global_hotkey:string;tts_voice:string;speaking_speed:number;confirmation_policy:string;memory_enabled:boolean};
+export const getSettings=()=>call<Settings>('settings_get');
+export const updateSettings=(settings:Settings)=>call<Settings>('settings_update',{settings});
+export const resetSettings=()=>call<Settings>('settings_reset');
