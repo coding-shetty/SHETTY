@@ -1,0 +1,2 @@
+export type Risk = 'LOW'|'MEDIUM'|'HIGH'|'CRITICAL';
+export function classifyCommand(command:string):Risk { const c=command.toLowerCase(); if(['rm -rf','sudo','diskutil','shutdown','reboot','git reset --hard','git push --force','kill '].some(x=>c.includes(x))) return 'CRITICAL'; if(['rm ','delete','drop database','chmod','mv '].some(x=>c.includes(x))) return 'HIGH'; if(['npm install','pip install','cargo build','git '].some(x=>c.includes(x))) return 'MEDIUM'; return 'LOW'; }
